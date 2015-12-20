@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Small scripts to automate stash operations",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "add-repo": "node ./scripts/create-dbp-repository.js"
   },
   "author": "Borys Ponomarenko <bponomarenko@gmail.com>",
   "license": "MIT",
