@@ -18,7 +18,8 @@ inquirer.prompt([
 	},
 	{
 		name: 'username',
-		message: 'What is the Stash username:'
+		message: 'What is the Stash username:',
+		default: 'borysp'
 	},
 	{
 		name: 'password',
@@ -27,7 +28,8 @@ inquirer.prompt([
 	},
 	{
 		name: 'project',
-		message: 'What is the Stash project slug:'
+		message: 'What is the Stash project slug:',
+		default: 'dbp-mod'
 	},
 	{
 		name: 'repoSlug',
@@ -114,6 +116,7 @@ function setupRepository() {
 		})
 		.then(function(res) {
 			checkStashError(res, 'Unable to setup repository default branch.');
+			return setMinimumApprovers();
 		})
 		.catch(function(err) {
 			console.error('ERROR: Unable to setup repository.\n' + err);
@@ -171,4 +174,89 @@ function setBranchingModel() {
 		post_req.write(post_data);
 		post_req.end();
 	});
+};
+
+function setMinimumApprovers() {
+	return new Promise(function(resolve, reject) {
+
+		function makeRequest(token, cookie, skipRequest) {
+			console.log()
+			var post_data = querystring.stringify({
+				'requiredApprovers' : 'on',
+				'requiredApproversCount' : '2',
+				'atl_token': token || '',
+				'submit': 'Save'
+			});
+
+			// An object of options to indicate where to post to
+			var post_options = {
+				host: data.baseUrl,
+				path: '/projects/' + data.project + '/repos/' + data.repoSlug + '/settings/pull-requests',
+				method: 'POST',
+				auth: data.username + ':' + data.password,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Content-Length': Buffer.byteLength(post_data),
+					'X-Atlassian-Token': 'no-check'
+				}
+			};
+
+			if(cookie) {
+				post_options.headers['Cookie'] = cookie;
+			}
+
+			// Set up the request
+			var post_req = https.request(post_options, function(res) {
+				var sendAgain = false;
+				var data = '';
+
+				res.setEncoding('utf8');
+				res.on('data', function(result) {
+					if(result) {
+						// something not set up - do request again, but with cookie and atl_token
+						sendAgain = true;
+						data += result;
+					}
+				});
+				res.on('end', function (end) {
+					if(!sendAgain || skipRequest) {
+						if(sendAgain) {
+							console.log('WARNING: Unable to set minumum required approvers for pull requests!');
+						}
+
+						resolve();
+					} else {
+						makeRequest(getAtlToken(data), getCookie(res), true);
+					}
+				});
+			});
+
+			post_req.on('error', function(err) {
+				reject('ERROR: Unable to minimim required approvers.\n' + err);
+			});
+
+			// post the data
+			post_req.write(post_data);
+			post_req.end();
+		};
+		
+		makeRequest();
+	});
+};
+
+function getCookie(response) {
+	var setCookie = response.headers['set-cookie'];
+	if(setCookie) {
+		var str = setCookie[0];
+		return str.split(';')[0];
+	}
+	return null;
+};
+
+function getAtlToken(data) {
+	var m = data.match(/<input type="hidden" name="atl_token" value="(\w+)">/);
+	if(m && m.length == 2) {
+		return m[1];
+	}
+	return null;
 };
