@@ -184,6 +184,7 @@ function setMinimumApprovers() {
 			var post_data = querystring.stringify({
 				'requiredApprovers' : 'on',
 				'requiredApproversCount' : '2',
+				'requirePullRequestTasksResolved': 'on',
 				'atl_token': token || '',
 				'submit': 'Save'
 			});
