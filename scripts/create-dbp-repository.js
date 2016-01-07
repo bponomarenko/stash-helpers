@@ -102,11 +102,16 @@ function setupRepository() {
 	var groups = ['development', 'expert services'];
 	var users = ['srinivasan', 'dmitrys', 'dragos', 'carlos'];
 
-	return stash.repos.setGroupPermissions(data.project, data.repoSlug, groups, 'READ')
+	return	Promise.resolve()
+		/*
+		// Group and Users permissions are now set on Project level
+		.then(function(res){
+			return stash.repos.setGroupPermissions(data.project, data.repoSlug, groups, 'READ')
+		})
 		.then(function(res){
 			checkStashError(res, 'Unable to setup repository group permissions.');
 			return stash.repos.setUserPermissions(data.project, data.repoSlug, users, 'WRITE');
-		})
+		})*/
 		.then(function(res) {
 			checkStashError(res, 'Unable to setup repository user permissions.');
 			return setBranchingModel();
@@ -124,7 +129,7 @@ function setupRepository() {
 };
 
 function checkStashError(result, error) {
-	if(result.errors) {
+	if(result && result.errors) {
 		var errorStr = result.errors.map(function(err){
 			return err.message;
 		}).join('\n');
