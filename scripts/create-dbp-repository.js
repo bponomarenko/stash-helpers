@@ -142,7 +142,7 @@ function checkStashError(result, error) {
 function setBranchingModel() {
 	return new Promise(function(resolve, reject) {
 		var post_data = querystring.stringify({
-			'DEVELOPMENT' : 'refs/heads/develop',
+			'DEVELOPMENT' : 'refs/heads/master',
 			/*'PRODUCTION' : 'refs/heads/master',*/
 			'FEATURE-prefix': 'feature/',
 			'FEATURE-enabled': 'on',
@@ -150,6 +150,7 @@ function setBranchingModel() {
 			'HOTFIX-enabled': 'on',*/
 			'branch-model-settings-form-submit': 'Save'
 		});
+		console.log(post_data)
 
 		// An object of options to indicate where to post to
 		var post_options = {
