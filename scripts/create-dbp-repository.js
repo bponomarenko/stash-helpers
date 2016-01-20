@@ -85,6 +85,7 @@ function createBranches(cloneUrl) {
 			console.log('Pushing master changes');
 			return Promise.denodeify(repo.remote_push.bind(repo))('origin', 'master');
 		})
+		/* // There will be no develop branch. only master
 		.then(function(){
 			console.log('Creating "develop" branch');
 			return Promise.denodeify(repo.create_branch.bind(repo))('develop');
@@ -92,7 +93,7 @@ function createBranches(cloneUrl) {
 		.then(function(){
 			console.log('Pushing develop changes');
 			return Promise.denodeify(repo.remote_push.bind(repo))('origin', 'develop');
-		})
+		})*/
 		.catch(function(err) {
 			console.error('ERROR: Unable to create initial commit and branches.\n' + err);
 		});
@@ -117,7 +118,7 @@ function setupRepository() {
 			return setBranchingModel();
 		})
 		.then(function() {
-			return stash.repos.setDefaultBranch(data.project, data.repoSlug, 'develop');
+			return stash.repos.setDefaultBranch(data.project, data.repoSlug, 'master');
 		})
 		.then(function(res) {
 			checkStashError(res, 'Unable to setup repository default branch.');
@@ -142,11 +143,11 @@ function setBranchingModel() {
 	return new Promise(function(resolve, reject) {
 		var post_data = querystring.stringify({
 			'DEVELOPMENT' : 'refs/heads/develop',
-			'PRODUCTION' : 'refs/heads/master',
+			/*'PRODUCTION' : 'refs/heads/master',*/
 			'FEATURE-prefix': 'feature/',
 			'FEATURE-enabled': 'on',
-			'HOTFIX-prefix': 'hotfix/',
-			'HOTFIX-enabled': 'on',
+			/*'HOTFIX-prefix': 'hotfix/',
+			'HOTFIX-enabled': 'on',*/
 			'branch-model-settings-form-submit': 'Save'
 		});
 
