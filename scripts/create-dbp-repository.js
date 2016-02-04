@@ -146,12 +146,11 @@ function setBranchingModel() {
 			/*'PRODUCTION' : 'refs/heads/master',*/
 			'FEATURE-prefix': 'feature/',
 			'FEATURE-enabled': 'on',
-			/*'HOTFIX-prefix': 'hotfix/',
-			'HOTFIX-enabled': 'on',*/
+			'BUGFIX-prefix': 'fix/',
+			'BUGFIX-enabled': 'on',
 			'branch-model-settings-form-submit': 'Save'
 		});
-		console.log(post_data)
-
+ 
 		// An object of options to indicate where to post to
 		var post_options = {
 			host: data.baseUrl,
